@@ -66,8 +66,10 @@ class UserWithRecipesSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         author_recipes = Recipe.objects.filter(author=obj)
-        
-        recipes_limit = self.context.get('request').GET.get('recipes_limit', settings.RECIPES_LIMIT_DEFAULT)
+
+        recipes_limit = self.context.get('request').GET.get(
+            'recipes_limit', settings.RECIPES_LIMIT_DEFAULT
+            )
         author_recipes = author_recipes[:int(recipes_limit)]
 
         serializer = RecipeListSerializer(
@@ -107,7 +109,9 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 
     id = serializers.StringRelatedField(source='product.id')
     name = serializers.CharField(source='product.name', read_only=True)
-    measurement_unit = serializers.CharField(source='product.measurement_unit', read_only=True)
+    measurement_unit = serializers.CharField(
+        source='product.measurement_unit', read_only=True
+        )
 
     class Meta:
         model = RecipeIngredient
@@ -178,7 +182,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_add(self, obj, model):
         user = self.context['request'].user
-        return not user.is_anonymous and model.objects.filter(user=user, recipe=obj).exists()
+        return not user.is_anonymous and model.objects.filter(
+            user=user, recipe=obj
+            ).exists()
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
@@ -202,7 +208,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, value):
         ingredients = [item['id'] for item in value]
-        
+
         for ingredient in ingredients:
             if ingredients.count(ingredient) > 1:
                 raise exceptions.ValidationError(

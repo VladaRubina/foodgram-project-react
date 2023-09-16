@@ -1,7 +1,6 @@
 import csv
 from pathlib import Path
 
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from foodgram.settings import BASE_DIR
 from recipes.models import Ingredient
@@ -27,7 +26,9 @@ class Command(BaseCommand):
         )
 
         ingredient_list = [
-            Ingredient(name=row["name"], measurement_unit=row["measurement_unit"])
+            Ingredient(
+                name=row["name"], measurement_unit=row["measurement_unit"]
+                )
             for row in file
         ]
 
