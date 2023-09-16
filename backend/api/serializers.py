@@ -187,7 +187,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             model.objects.filter(user=user, recipe=obj).exists()
 
 
-
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     """RecipeCreateUpdate Serializer."""
 
