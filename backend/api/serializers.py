@@ -110,8 +110,8 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.StringRelatedField(source='product.id')
     name = serializers.CharField(source='product.name', read_only=True)
     measurement_unit = serializers.CharField(
-    source='product.measurement_unit',
-    read_only=True
+        source='product.measurement_unit',
+        read_only=True
     )
 
     class Meta:

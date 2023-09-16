@@ -28,7 +28,7 @@ class Command(BaseCommand):
         ingredient_list = [
             Ingredient(
                 name=row["name"], measurement_unit=row["measurement_unit"]
-                )
+            )
             for row in file
         ]
 
