@@ -1,25 +1,22 @@
+from api.permissions import RecipePermission
+from api.serializers import (CartSerializer, FavouriteSerializer,
+                             FollowSerializer, IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeListSerializer, RecipeSerializer,
+                             TagSerializer, UserCreateSerializer,
+                             UserWithRecipesSerializer)
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+from foodgram.pagination import CustomPagination
+from recipes.models import (Cart, Favourite, Ingredient, Recipe,
+                            RecipeIngredient, Tag)
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from foodgram.pagination import CustomPagination
-from api.permissions import RecipePermission
-from recipes.models import (Cart, Favourite, Ingredient,
-                            Recipe, RecipeIngredient, Tag
-                            )
-from users.models import User, Follow
-from api.serializers import (IngredientSerializer,
-                             RecipeCreateUpdateSerializer,
-                             RecipeListSerializer, RecipeSerializer,
-                             TagSerializer, FavouriteSerializer,
-                             CartSerializer, UserCreateSerializer,
-                             UserWithRecipesSerializer, FollowSerializer
-                             )
+from users.models import Follow, User
 
 
 class UserViewSet(UserViewSet):
@@ -27,6 +24,7 @@ class UserViewSet(UserViewSet):
 
     permission_classes = (IsAuthenticated,)
     pagination_class = CustomPagination
+    action_serializer = UserCreateSerializer
 
     @action(
         detail=False,
@@ -39,8 +37,6 @@ class UserViewSet(UserViewSet):
         paginated_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
-
-    action_serializer = UserCreateSerializer
 
     @action(
         detail=True,
