@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', default='').lower() == 'true'
 
-#ALLOWED_HOSTS = ['vladafoodgram.ddns.net', '51.250.19.155', '127.0.0.1']
+# ALLOWED_HOSTS = ['vladafoodgram.ddns.net', '51.250.19.155', '127.0.0.1']
 
 ALLOWED_HOSTS = ['*']
 
