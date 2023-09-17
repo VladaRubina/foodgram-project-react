@@ -207,7 +207,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         exclude = ('pub_date',)
-    
+
     def validate_tags(self, value):
         if not value:
             raise exceptions.ValidationError(
