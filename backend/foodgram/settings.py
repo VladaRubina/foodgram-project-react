@@ -67,7 +67,7 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-         'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
         'USER': os.getenv('POSTGRES_USER', 'foodgram'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
@@ -117,9 +117,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 4,
-    'MAX_PAGE_SIZE': 30,
+    'DEFAULT_PAGINATION_CLASS': 'foodgram.pagination.CustomPagination',
 }
 
 SIMPLE_JWT = {
