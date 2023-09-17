@@ -1,21 +1,14 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
     """User class."""
 
-    email = models.EmailField(
-        max_length=254,
-        unique=True,
-        blank=False,
-        null=False,
-        verbose_name='E-mail',
-    )
     username = models.CharField(
-        max_length=150,
+        max_length=128,
         unique=True,
-        help_text=('Required fields. Max 150 symbols.'
+        help_text=('Required fields. Max 128 symbols.'
                    'Letters, figures and symbols @/./+/-/_. only'
                    ),
         error_messages={
@@ -23,12 +16,19 @@ class User(AbstractUser):
         },
         verbose_name='Login',
     )
+    email = models.EmailField(
+        max_length=128,
+        unique=True,
+        blank=False,
+        null=False,
+        verbose_name='E-mail',
+    )
     first_name = models.CharField(
-        max_length=150,
+        max_length=128,
         verbose_name='First Name',
     )
     last_name = models.CharField(
-        max_length=150,
+        max_length=128,
         verbose_name='Last Name'
     )
 
