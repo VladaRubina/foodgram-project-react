@@ -1,12 +1,13 @@
-from django.conf import settings
 from django.shortcuts import get_object_or_404
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Cart, Favourite, Ingredient, Recipe,
-                            RecipeIngredient, Tag)
 from rest_framework import exceptions, serializers
 from rest_framework.validators import UniqueTogetherValidator
-from users.models import Follow, User
+from djoser.serializers import UserCreateSerializer, UserSerializer
+
+from recipes.models import (ShoppingCart, Favourite, Ingredient,
+                            Recipe, RecipeIngredient, Tag
+                            )
+from users.models import User, Follow
 
 
 class UserSerializer(UserSerializer):
@@ -178,7 +179,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return self.get_is_add(obj, Favourite)
 
     def get_is_in_shopping_cart(self, obj):
-        return self.get_is_add(obj, Cart)
+        return self.get_is_add(obj, ShoppingCart)
 
     def get_is_add(self, obj, model):
         user = self.context['request'].user
@@ -263,7 +264,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         RecipeIngredient.objects.bulk_create(
             recipe_ingredients, ignore_conflicts=True)
         return super().update(instance, validated_data)
-    
+
     def to_representation(self, instance):
         serializer = RecipeSerializer(
             instance,

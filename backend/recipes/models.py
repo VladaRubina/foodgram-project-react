@@ -1,6 +1,7 @@
-from django.core.validators import (MinValueValidator, MaxValueValidator)
+from django.core.validators import MinValueValidator
 from django.db import models
 from users.models import User
+
 
 TEXT_CUT = 50
 

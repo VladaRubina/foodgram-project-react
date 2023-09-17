@@ -13,14 +13,14 @@ from api.filters import IngredientFilter, RecipiesFilter
 
 from foodgram.pagination import CustomPagination
 from api.permissions import RecipePermission
-from recipes.models import (ShoppingCart, Favorite, Ingredient,
+from recipes.models import (ShoppingCart, Favourite, Ingredient,
                             Recipe, RecipeIngredient, Tag
                             )
 from users.models import User, Follow
 from api.serializers import (IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, RecipeSerializer,
-                             TagSerializer, FavoriteSerializer,
+                             TagSerializer, FavouriteSerializer,
                              ShoppingCartSerializer, UserCreateSerializer,
                              UserWithRecipesSerializer, FollowSerializer
                              )
