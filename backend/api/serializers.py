@@ -108,10 +108,9 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
     """RecipeIngredient Serializer."""
 
     id = serializers.StringRelatedField(source='product.id')
-    name = serializers.CharField(source='product.name', read_only=True)
+    name = serializers.CharField(source='product.name')
     measurement_unit = serializers.CharField(
-        source='product.measurement_unit',
-        read_only=True
+        source='product.measurement_unit'
     )
 
     class Meta:
@@ -204,11 +203,19 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         exclude = ('pub_date',)
 
     def validate_tags(self, value):
+        if not value:
+            raise exceptions.ValidationError(
+                'Need to add at least one tag.'
+            )
         return value
 
     def validate_ingredients(self, value):
-        ingredients = [item['id'] for item in value]
+        if not value:
+            raise exceptions.ValidationError(
+                'Need to add at least one ingredient.'
+            )
 
+        ingredients = [item['id'] for item in value]
         for ingredient in ingredients:
             if ingredients.count(ingredient) > 1:
                 raise exceptions.ValidationError(
@@ -243,18 +250,20 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         if ingredients is not None:
             instance.ingredients.clear()
 
-        recipe_ingredients = [
-            RecipeIngredient(
+        recipe_ingredients = []
+        for ingredient in ingredients:
+            amount = ingredient['amount']
+            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+            recipe_ingredient = RecipeIngredient(
                 recipe=instance,
-                product=get_object_or_404(Ingredient, pk=ingredient['id']),
-                amount=ingredient['amount']
+                product=ingredient,
+                amount=amount
             )
-            for ingredient in ingredients
-        ]
+            recipe_ingredients.append(recipe_ingredient)
         RecipeIngredient.objects.bulk_create(
             recipe_ingredients, ignore_conflicts=True)
         return super().update(instance, validated_data)
-
+    
     def to_representation(self, instance):
         serializer = RecipeSerializer(
             instance,
@@ -287,15 +296,15 @@ class FavouriteSerializer(serializers.ModelSerializer):
         ]
 
 
-class CartSerializer(serializers.ModelSerializer):
-    """Cart Serializer."""
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """ShoppingCart Serializer."""
 
     class Meta:
-        model = Cart
+        model = ShoppingCart
         fields = 'id', 'user', 'recipe'
         validators = [
             UniqueTogetherValidator(
-                queryset=Cart.objects.all(),
+                queryset=ShoppingCart.objects.all(),
                 fields=('user', 'recipe'),
                 message='Already on purchase list!'
             )

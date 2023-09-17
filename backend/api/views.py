@@ -1,22 +1,29 @@
-from api.permissions import RecipePermission
-from api.serializers import (CartSerializer, FavouriteSerializer,
-                             FollowSerializer, IngredientSerializer,
-                             RecipeCreateUpdateSerializer,
-                             RecipeListSerializer, RecipeSerializer,
-                             TagSerializer, UserCreateSerializer,
-                             UserWithRecipesSerializer)
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from foodgram.pagination import CustomPagination
-from recipes.models import (Cart, Favourite, Ingredient, Recipe,
-                            RecipeIngredient, Tag)
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly
+                                        )
 from rest_framework.response import Response
-from users.models import Follow, User
+from api.filters import IngredientFilter, RecipiesFilter
+
+from foodgram.pagination import CustomPagination
+from api.permissions import RecipePermission
+from recipes.models import (ShoppingCart, Favorite, Ingredient,
+                            Recipe, RecipeIngredient, Tag
+                            )
+from users.models import User, Follow
+from api.serializers import (IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeListSerializer, RecipeSerializer,
+                             TagSerializer, FavoriteSerializer,
+                             ShoppingCartSerializer, UserCreateSerializer,
+                             UserWithRecipesSerializer, FollowSerializer
+                             )
 
 
 class UserViewSet(UserViewSet):
@@ -74,6 +81,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (RecipePermission,)
     pagination_class = CustomPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipiesFilter
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -107,30 +116,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
         favourite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def cart_logic(self, user, recipe):
-        serializer = CartSerializer(
+    def shopping_cart_logic(self, user, recipe):
+        serializer = ShoppingCartSerializer(
             data={'user': user.id, 'recipe': recipe.id}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        cart_serializer = RecipeListSerializer(recipe)
-        return cart_serializer.data
+        shopping_cart_serializer = RecipeListSerializer(recipe)
+        return shopping_cart_serializer.data
 
     @action(detail=True, methods=('POST', 'DELETE'))
     def shopping_cart(self, request, pk=None):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         if self.request.method == 'POST':
-            cart_data = self.cart_logic(user, recipe)
+            shopping_cart_data = self.shopping_cart_logic(user, recipe)
             return Response(
-                cart_data,
+                shopping_cart_data,
                 status=status.HTTP_201_CREATED
             )
-        cart_recipe = get_object_or_404(Cart,
-                                        user=request.user,
-                                        recipe=recipe
-                                        )
-        cart_recipe.delete()
+        shopping_cart = ShoppingCart.objects.filter(user=user, recipe=recipe)
+        if not shopping_cart:
+            raise exceptions.ValidationError(
+                'The recipe is not in list of shopping_cart!'
+            )
+        shopping_cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -139,8 +149,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        cart = Cart.objects.filter(user=self.request.user)
-        recipes = [item.recipe.id for item in cart]
+        shopping_cart = ShoppingCart.objects.filter(user=self.request.user)
+        recipes = [item.recipe.id for item in shopping_cart]
         ingredients = (
             RecipeIngredient.objects.filter(recipe_id__in=recipes)
             .values("product_id__name", "product_id__measurement_unit")
@@ -161,12 +171,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class IngredientViewSet(viewsets.ModelViewSet):
     """Ingredient ViewSet."""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_class = (RecipePermission,)
+    pagination_class = None
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
 
 
 class TagViewSet(viewsets.ModelViewSet):
     """Tag ViewSet."""
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_class = (IsAuthenticatedOrReadOnly)
+    pagination_class = None

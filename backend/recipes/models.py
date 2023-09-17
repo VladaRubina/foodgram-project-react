@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import (MinValueValidator, MaxValueValidator)
 from django.db import models
 from users.models import User
 
@@ -172,19 +172,19 @@ class Favourite(models.Model):
         return f'Recipe {self.recipe} in favourites of {self.user}'
 
 
-class Cart(models.Model):
-    """Cart model."""
+class ShoppingCart(models.Model):
+    """ShoppingCart model."""
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='cart',
+        related_name='shopping_cart',
         verbose_name='User',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='cart_recipe',
+        related_name='shopping_cart',
         verbose_name='recipe',
     )
 
@@ -195,9 +195,9 @@ class Cart(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
-                name='unique_cart_list_recipe'
+                name='unique_shopping_cart_list_recipe'
             ),
         )
 
     def __str__(self):
-        return f'Recipe {self.recipe} in cart of {self.user}'
+        return f'Recipe {self.recipe} in shopping_cart of {self.user}'
