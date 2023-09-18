@@ -13,14 +13,14 @@ from api.filters import IngredientFilter, RecipiesFilter
 
 from foodgram.pagination import CustomPagination
 from api.permissions import RecipePermission
-from recipes.models import (ShoppingCart, Favorite, Ingredient,
+from recipes.models import (ShoppingCart, Favourite, Ingredient,
                             Recipe, RecipeIngredient, Tag
                             )
 from users.models import User, Follow
 from api.serializers import (IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, RecipeSerializer,
-                             TagSerializer, FavoriteSerializer,
+                             TagSerializer, FavouriteSerializer,
                              ShoppingCartSerializer, UserCreateSerializer,
                              UserWithRecipesSerializer, FollowSerializer
                              )
@@ -90,31 +90,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateUpdateSerializer
         return RecipeSerializer
 
-    def favorite_logic(self, user, recipe):
-        serializer = FavoriteSerializer(
+    def favourite_logic(self, user, recipe):
+        serializer = FavouriteSerializer(
             data={'user': user.id, 'recipe': recipe.id}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        favorite_serializer = RecipeListSerializer(recipe)
-        return favorite_serializer.data
+        favourite_serializer = RecipeListSerializer(recipe)
+        return favourite_serializer.data
 
     @action(detail=True, methods=('POST', 'DELETE'))
-    def favorite(self, request, pk=None):
+    def favourite(self, request, pk=None):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         if self.request.method == 'POST':
-            favorite_data = self.favorite_logic(user, recipe)
+            favourite_data = self.favourite_logic(user, recipe)
             return Response(
-                favorite_data,
+                favourite_data,
                 status=status.HTTP_201_CREATED
             )
-        favorite = Favorite.objects.filter(user=user, recipe=recipe)
-        if not favorite:
+        favourite = Favourite.objects.filter(user=user, recipe=recipe)
+        if not favourite:
             raise exceptions.ValidationError(
-                'The recipe is not in list of favorites!'
+                'The recipe is not in list of favourites!'
             )
-        favorite.delete()
+        favourite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def shopping_cart_logic(self, user, recipe):

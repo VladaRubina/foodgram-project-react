@@ -4,7 +4,7 @@ from rest_framework import exceptions, serializers
 from rest_framework.validators import UniqueTogetherValidator
 from djoser.serializers import UserCreateSerializer, UserSerializer
 
-from recipes.models import (ShoppingCart, Favorite, Ingredient,
+from recipes.models import (ShoppingCart, Favourite, Ingredient,
                             Recipe, RecipeIngredient, Tag
                             )
 from users.models import User, Follow
@@ -152,8 +152,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField(
         method_name='get_ingredients'
     )
-    is_favorited = serializers.SerializerMethodField(
-        method_name='get_is_favorited'
+    is_favourited = serializers.SerializerMethodField(
+        method_name='get_is_favourited'
     )
     is_in_shopping_cart = serializers.SerializerMethodField(
         method_name='get_is_in_shopping_cart'
@@ -164,8 +164,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         serializer = RecipeIngredientsSerializer(ingredients, many=True)
         return serializer.data
 
-    def get_is_favorited(self, obj):
-        return self.get_is_add(obj, Favorite)
+    def get_is_favourited(self, obj):
+        return self.get_is_add(obj, Favourite)
 
     def get_is_in_shopping_cart(self, obj):
         return self.get_is_add(obj, ShoppingCart)
@@ -183,7 +183,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorited',
+            'is_favourited',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -287,17 +287,17 @@ class RecipeListSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time',)
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
-    """Favorite Serializer."""
+class FavouriteSerializer(serializers.ModelSerializer):
+    """Favourite Serializer."""
 
     class Meta:
-        model = Favorite
+        model = Favourite
         fields = 'id', 'user', 'recipe', 'add_date'
         validators = [
             UniqueTogetherValidator(
-                queryset=Favorite.objects.all(),
+                queryset=Favourite.objects.all(),
                 fields=('user', 'recipe'),
-                message='Already on favorites list!'
+                message='Already on favourites list!'
             )
         ]
 
