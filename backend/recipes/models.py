@@ -1,7 +1,7 @@
-from django.core.validators import MinValueValidator
 from django.db import models
-from users.models import User
+from django.core.validators import (MinValueValidator, MaxValueValidator)
 
+from users.models import User
 
 TEXT_CUT = 50
 
@@ -39,7 +39,7 @@ class Recipe(models.Model):
         verbose_name='Recipe Description',
     )
     cooking_time = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(1),),
+        validators=(MinValueValidator(1), MaxValueValidator(120),),
         verbose_name='Cook Time',
     )
     pub_date = models.DateTimeField(
@@ -138,20 +138,20 @@ class Tag(models.Model):
         return self.name[:TEXT_CUT]
 
 
-class Favourite(models.Model):
-    """Favourite model."""
+class Favorite(models.Model):
+    """Favorite model."""
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favourites',
+        related_name='favorites',
         verbose_name='User',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favourites',
-        verbose_name='Favourites',
+        related_name='favorites',
+        verbose_name='Favorites',
     )
     add_date = models.DateTimeField(
         auto_now_add=True,
@@ -160,8 +160,8 @@ class Favourite(models.Model):
 
     class Meta:
         ordering = ('-add_date',)
-        verbose_name = 'Favourites'
-        verbose_name_plural = 'Favourites'
+        verbose_name = 'Favorites'
+        verbose_name_plural = 'Favorites'
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
@@ -170,7 +170,7 @@ class Favourite(models.Model):
         )
 
     def __str__(self):
-        return f'Recipe {self.recipe} in favourites of {self.user}'
+        return f'Recipe {self.recipe} in favorites of {self.user}'
 
 
 class ShoppingCart(models.Model):
