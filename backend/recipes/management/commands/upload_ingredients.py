@@ -29,7 +29,9 @@ class Command(BaseCommand):
             csvreader = csv.DictReader(csvfile, fieldnames=headerList)
             for row in csvreader:
                 ingredients.append(
-                    Ingredient(name=row["name"], measurement_unit=row["measurement_unit"])
+                    Ingredient(name=row["name"],
+                    measurement_unit=row["measurement_unit"]
+                    )
                 )
 
         Ingredient.objects.bulk_create(ingredients)
