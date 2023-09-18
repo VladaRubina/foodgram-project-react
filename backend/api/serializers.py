@@ -241,13 +241,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
         recipe_ingredients = [] 
         for ingredient in ingredients:
-                amount = ingredient['amount']
-                ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
-                recipe_ingredient = RecipeIngredient(
-                    recipe=instance,
-                    product=ingredient,
-                    amount=amount
-                )
+            amount = ingredient['amount']
+            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+            recipe_ingredient = RecipeIngredient(
+                recipe=instance,
+                product=ingredient,
+                amount=amount
+            )
             recipe_ingredients.append(recipe_ingredient)
         RecipeIngredient.objects.bulk_create(
             recipe_ingredients, ignore_conflicts=True)
