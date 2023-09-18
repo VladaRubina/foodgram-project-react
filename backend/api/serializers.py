@@ -167,8 +167,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_added(self, obj, model):
         user = self.context['request'].user
-        return user.is_authenticated and model.objects.filter(user=user, recipe=obj).exists()
-
+        return user.is_authenticated and \
+            model.objects.filter(user=user, recipe=obj).exists()
 
     class Meta:
         model = Recipe
