@@ -5,7 +5,7 @@ from api.serializers import (FavouriteSerializer, FollowSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, RecipeSerializer,
                              ShoppingCartSerializer, TagSerializer,
-                             UserWithRecipesSerializer)
+                             UserCreateSerializer, UserWithRecipesSerializer)
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -39,6 +39,8 @@ class UserViewSet(UserViewSet):
         paginated_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
+
+    action_serializer = UserCreateSerializer
 
     @action(
         detail=True,
