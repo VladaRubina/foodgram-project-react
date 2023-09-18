@@ -1,29 +1,25 @@
+from api.filters import IngredientFilter, RecipiesFilter
+from api.permissions import RecipePermission
+from api.serializers import (FavouriteSerializer, FollowSerializer,
+                             IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeListSerializer, RecipeSerializer,
+                             ShoppingCartSerializer, TagSerializer,
+                             UserCreateSerializer, UserWithRecipesSerializer)
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from foodgram.pagination import CustomPagination
+from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly
-                                        )
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from api.filters import IngredientFilter, RecipiesFilter
-
-from foodgram.pagination import CustomPagination
-from api.permissions import RecipePermission
-from recipes.models import (ShoppingCart, Favourite, Ingredient,
-                            Recipe, RecipeIngredient, Tag
-                            )
-from users.models import User, Follow
-from api.serializers import (IngredientSerializer,
-                             RecipeCreateUpdateSerializer,
-                             RecipeListSerializer, RecipeSerializer,
-                             TagSerializer, FavouriteSerializer,
-                             ShoppingCartSerializer, UserCreateSerializer,
-                             UserWithRecipesSerializer, FollowSerializer
-                             )
+from users.models import Follow, User
 
 
 class UserViewSet(UserViewSet):
@@ -43,8 +39,6 @@ class UserViewSet(UserViewSet):
         paginated_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
-
-    action_serializer = UserCreateSerializer
 
     @action(
         detail=True,

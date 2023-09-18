@@ -1,14 +1,12 @@
-from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from rest_framework import exceptions, serializers
 from rest_framework.validators import UniqueTogetherValidator
-from djoser.serializers import UserCreateSerializer, UserSerializer
-
-from recipes.models import (ShoppingCart, Favourite, Ingredient,
-                            Recipe, RecipeIngredient, Tag
-                            )
-from users.models import User, Follow
+from users.models import Follow, User
 
 
 class UserSerializer(UserSerializer):
@@ -134,7 +132,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ('name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -142,7 +140,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = ('name', 'measurement_unit')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
