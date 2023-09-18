@@ -239,7 +239,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         if ingredients is not None:
             instance.ingredients.clear()
 
-        recipe_ingredients = [] 
+        recipe_ingredients = []
         for ingredient in ingredients:
             amount = ingredient['amount']
             ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
