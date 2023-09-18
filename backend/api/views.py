@@ -5,7 +5,7 @@ from api.serializers import (FavouriteSerializer, FollowSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, RecipeSerializer,
                              ShoppingCartSerializer, TagSerializer,
-                             UserCreateSerializer, UserWithRecipesSerializer)
+                             UserWithRecipesSerializer)
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
