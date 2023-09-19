@@ -12,9 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', default='').lower() == 'true'
+DEBUG = True
+#DEBUG = os.getenv('DEBUG', default='').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['vladafoodgram.ddns.net', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vladafoodgram.ddns.net/',
