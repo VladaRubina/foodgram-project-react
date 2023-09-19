@@ -66,7 +66,9 @@ class UserWithRecipesSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        recipes_limit = request.GET.get('recipes_limit', settings.RECIPES_LIMIT_DEFAULT)
+        recipes_limit = request.GET.get(
+            'recipes_limit', settings.RECIPES_LIMIT_DEFAULT
+        )
         author_recipes = Recipe.objects.filter(author=obj)[:int(recipes_limit)]
     
         serializer = RecipeListSerializer(
@@ -76,7 +78,6 @@ class UserWithRecipesSerializer(UserSerializer):
         )
     
         return serializer.data
-
 
 
 class FollowSerializer(UserSerializer):
@@ -178,8 +179,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_add(self, obj, model):
         user = self.context['request'].user
         return (
-            user.is_authenticated and
-            model.objects.filter(user=user, recipe=obj).exists()
+            user.is_authenticated and model.objects.filter(
+                user=user, recipe=obj).exists()
         )
 
 
@@ -249,7 +250,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         )
 
         return super().update(instance, validated_data)
-
 
     def to_representation(self, instance):
         serializer = RecipeSerializer(
