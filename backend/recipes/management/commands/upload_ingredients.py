@@ -10,11 +10,11 @@ DATA_FILE_PATH = Path(Path(BASE_DIR, "data/"), "ingredients.csv")
 
 
 class Command(BaseCommand):
-
     help = "Data upload from csv"
 
     def handle(self, *args, **options):
-        headerList = ("name", "measurement_unit",)
+        headerList = ("name", "measurement_unit")
+
         try:
             self.stderr.write("Data uploaded..")
             return
@@ -27,13 +27,7 @@ class Command(BaseCommand):
 
         with open(DATA_FILE_PATH, 'r', encoding="utf-8") as csvfile:
             csvreader = csv.DictReader(csvfile, fieldnames=headerList)
-            for row in csvreader:
-                ingredients.append(
-                    Ingredient(
-                        name=row["name"],
-                        measurement_unit=row["measurement_unit"]
-                    )
-                )
+            ingredients = [Ingredient(**row) for row in csvreader]
 
         Ingredient.objects.bulk_create(ingredients)
 

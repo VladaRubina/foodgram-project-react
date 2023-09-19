@@ -1,11 +1,3 @@
-from api.filters import IngredientFilter, RecipiesFilter
-from api.permissions import RecipePermission
-from api.serializers import (FavouriteSerializer, FollowSerializer,
-                             IngredientSerializer,
-                             RecipeCreateUpdateSerializer,
-                             RecipeListSerializer, RecipeSerializer,
-                             ShoppingCartSerializer, TagSerializer,
-                             UserCreateSerializer, UserWithRecipesSerializer)
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -20,6 +12,15 @@ from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from users.models import Follow, User
+
+from api.filters import IngredientFilter, RecipiesFilter
+from api.permissions import RecipePermission
+from api.serializers import (FavouriteSerializer, FollowSerializer,
+                             IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeListSerializer, RecipeSerializer,
+                             ShoppingCartSerializer, TagSerializer,
+                             UserWithRecipesSerializer)
 
 
 class UserViewSet(UserViewSet):
@@ -39,8 +40,6 @@ class UserViewSet(UserViewSet):
         paginated_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
-
-    action_serializer = UserCreateSerializer
 
     @action(
         detail=True,
