@@ -176,7 +176,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             return False
         return add.objects.filter(user=user, recipe=obj).exists()
 
-
     class Meta:
         model = Recipe
         fields = (
