@@ -178,10 +178,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_add(self, obj, add):
         user = self.context['request'].user
-        return (
-            user.is_authenticated and add.objects.filter(
-                user=user, recipe=obj).exists()
-        )
+        if user.is_anonymous:
+            return False
+        return add.objects.filter(user=user, recipe=obj).exists()
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
