@@ -70,13 +70,13 @@ class UserWithRecipesSerializer(UserSerializer):
             'recipes_limit', settings.RECIPES_LIMIT_DEFAULT
         )
         author_recipes = Recipe.objects.filter(author=obj)[:int(recipes_limit)]
-    
+
         serializer = RecipeListSerializer(
             author_recipes,
             context={'request': request},
             many=True
         )
-    
+
         return serializer.data
 
 
