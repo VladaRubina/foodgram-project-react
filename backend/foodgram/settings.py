@@ -1,9 +1,12 @@
-from datetime import timedelta
 import os
+from datetime import timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+RECIPES_LIMIT_DEFAULT = 10
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,14 +30,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'recipes',
-    'users',
-    'api',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
     'import_export',
+    'recipes',
+    'users',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +71,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
+
 
 DATABASES = {
     'default': {
@@ -104,7 +108,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'collected_static'
 
 MEDIA_URL = '/media/'

@@ -1,8 +1,8 @@
 from django.contrib import admin
-
-from .models import Favorite, Ingredient, Recipe, Tag
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+
+from .models import Favorite, Ingredient, Recipe, Tag
 
 
 class RecipeIngredientsInLine(admin.TabularInline):
