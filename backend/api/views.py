@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from foodgram.pagination import CustomPagination
-from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
@@ -15,7 +15,7 @@ from users.models import Follow, User
 
 from api.filters import IngredientFilter, RecipiesFilter
 from api.permissions import RecipePermission
-from api.serializers import (FavouriteSerializer, FollowSerializer,
+from api.serializers import (FavoriteSerializer, FollowSerializer,
                              IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, RecipeSerializer,
@@ -85,31 +85,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateUpdateSerializer
         return RecipeSerializer
 
-    def favourite_logic(self, user, recipe):
-        serializer = FavouriteSerializer(
+    def favorite_logic(self, user, recipe):
+        serializer = FavoriteSerializer(
             data={'user': user.id, 'recipe': recipe.id}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        favourite_serializer = RecipeListSerializer(recipe)
-        return favourite_serializer.data
+        favorite_serializer = RecipeListSerializer(recipe)
+        return favorite_serializer.data
 
     @action(detail=True, methods=('POST', 'DELETE'))
-    def favourite(self, request, pk=None):
+    def favorite(self, request, pk=None):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         if self.request.method == 'POST':
-            favourite_data = self.favourite_logic(user, recipe)
+            favorite_data = self.favorite_logic(user, recipe)
             return Response(
-                favourite_data,
+                favorite_data,
                 status=status.HTTP_201_CREATED
             )
-        favourite = Favourite.objects.filter(user=user, recipe=recipe)
-        if not favourite:
+        favorite = Favorite.objects.filter(user=user, recipe=recipe)
+        if not favorite:
             raise exceptions.ValidationError(
-                'The recipe is not in list of favourites!'
+                'The recipe is not in list of favorites!'
             )
-        favourite.delete()
+        favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def shopping_cart_logic(self, user, recipe):
