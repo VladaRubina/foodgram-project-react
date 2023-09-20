@@ -1,14 +1,14 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
     """User class."""
 
     username = models.CharField(
-        max_length=150,
+        max_length=128,
         unique=True,
-        help_text=('Required fields. Max 150 symbols.'
+        help_text=('Required fields. Max 128 symbols.'
                    'Letters, figures and symbols @/./+/-/_. only'
                    ),
         error_messages={

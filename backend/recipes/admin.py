@@ -1,8 +1,8 @@
 from django.contrib import admin
+
+from .models import Favorite, Ingredient, Recipe, Tag
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
-
-from .models import Favourite, Ingredient, Recipe, Tag
 
 
 class RecipeIngredientsInLine(admin.TabularInline):
@@ -17,13 +17,13 @@ class RecipeIngredientsInLine(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     """RecipeAdmin class."""
 
-    list_display = ('name', 'author', 'favourite_count',)
+    list_display = ('name', 'author', 'favorite_count',)
     list_filter = ('author', 'name', 'tags',)
     empty_value_display = '-filter-'
     inlines = (RecipeIngredientsInLine,)
 
-    def favourite_count(self, obj):
-        return obj.favourites.count()
+    def favorite_count(self, obj):
+        return obj.favorites.count()
 
 
 class IngredientResource(resources.ModelResource):
@@ -43,5 +43,5 @@ class IngredientAdmin(ImportExportModelAdmin):
     resource_class = IngredientResource
 
 
-admin.site.register(Favourite)
+admin.site.register(Favorite)
 admin.site.register(Tag)
