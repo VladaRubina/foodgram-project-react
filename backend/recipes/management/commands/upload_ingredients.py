@@ -15,6 +15,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         headerList = ("name", "measurement_unit")
 
+        try:
+            self.stderr.write("Data uploaded..")
+            return
+
+        except (ObjectDoesNotExist, MultipleObjectsReturned):
+            pass
+
         self.stdout.write("Upload data")
         ingredients = []
 

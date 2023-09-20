@@ -6,9 +6,9 @@ class User(AbstractUser):
     """User class."""
 
     username = models.CharField(
-        max_length=128,
+        max_length=150,
         unique=True,
-        help_text=('Required fields. Max 128 symbols.'
+        help_text=('Required fields. Max 150 symbols.'
                    'Letters, figures and symbols @/./+/-/_. only'
                    ),
         error_messages={

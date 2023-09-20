@@ -4,23 +4,26 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import exceptions, status, viewsets
-from foodgram.pagination import CustomPagination
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+                                        IsAuthenticatedOrReadOnly
+                                        )
 from rest_framework.response import Response
-from users.models import Follow, User
-
 from api.filters import IngredientFilter, RecipiesFilter
+
+from foodgram.pagination import CustomPagination
 from api.permissions import RecipePermission
-from api.serializers import (FavoriteSerializer, FollowSerializer,
-                             IngredientSerializer,
+from recipes.models import (ShoppingCart, Favourite, Ingredient,
+                            Recipe, RecipeIngredient, Tag
+                            )
+from users.models import User, Follow
+from api.serializers import (IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, RecipeSerializer,
-                             ShoppingCartSerializer, TagSerializer,
-                             UserWithRecipesSerializer)
+                             TagSerializer, FavouriteSerializer,
+                             ShoppingCartSerializer, UserCreateSerializer,
+                             UserWithRecipesSerializer, FollowSerializer
+                             )
 
 
 class UserViewSet(UserViewSet):
@@ -40,6 +43,8 @@ class UserViewSet(UserViewSet):
         paginated_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
+
+    action_serializer = UserCreateSerializer
 
     @action(
         detail=True,
@@ -85,31 +90,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateUpdateSerializer
         return RecipeSerializer
 
-    def favorite_logic(self, user, recipe):
-        serializer = FavoriteSerializer(
+    def favourite_logic(self, user, recipe):
+        serializer = FavouriteSerializer(
             data={'user': user.id, 'recipe': recipe.id}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        favorite_serializer = RecipeListSerializer(recipe)
-        return favorite_serializer.data
+        favourite_serializer = RecipeListSerializer(recipe)
+        return favourite_serializer.data
 
     @action(detail=True, methods=('POST', 'DELETE'))
-    def favorite(self, request, pk=None):
+    def favourite(self, request, pk=None):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         if self.request.method == 'POST':
-            favorite_data = self.favorite_logic(user, recipe)
+            favourite_data = self.favourite_logic(user, recipe)
             return Response(
-                favorite_data,
+                favourite_data,
                 status=status.HTTP_201_CREATED
             )
-        favorite = Favorite.objects.filter(user=user, recipe=recipe)
-        if not favorite:
+        favourite = Favourite.objects.filter(user=user, recipe=recipe)
+        if not favourite:
             raise exceptions.ValidationError(
-                'The recipe is not in list of favorites!'
+                'The recipe is not in list of favourites!'
             )
-        favorite.delete()
+        favourite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def shopping_cart_logic(self, user, recipe):
