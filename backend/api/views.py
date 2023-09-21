@@ -1,3 +1,18 @@
+from django.db import models
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
+from rest_framework import exceptions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from foodgram.pagination import CustomPagination
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
+from users.models import Follow, User
+
 from api.filters import IngredientFilter, RecipiesFilter
 from api.permissions import RecipePermission
 from api.serializers import (FavoriteSerializer, FollowSerializer,
@@ -6,20 +21,6 @@ from api.serializers import (FavoriteSerializer, FollowSerializer,
                              RecipeListSerializer, RecipeSerializer,
                              ShoppingCartSerializer, TagSerializer,
                              UserCreateSerializer, UserWithRecipesSerializer)
-from django.db import models
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
-from foodgram.pagination import CustomPagination
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
-from rest_framework import exceptions, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from rest_framework.response import Response
-from users.models import Follow, User
 
 
 class UserViewSet(UserViewSet):
