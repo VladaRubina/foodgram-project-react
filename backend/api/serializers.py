@@ -50,21 +50,6 @@ class UserWithRecipesSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
-    def get_recipes(self, obj):
-        author_recipes = Recipe.objects.filter(author=obj)
-        if 'recipes_limit' in self.context.get('request').GET:
-            recipes_limit = self.context.get('request').GET['recipes_limit']
-            author_recipes = author_recipes[:int(recipes_limit)]
-        serializer = RecipeListSerializer(
-            author_recipes,
-            context={'request': self.context.get('request')},
-            many=True
-        )
-        return serializer.data
-
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
-
     class Meta:
         model = User
         fields = (
@@ -77,6 +62,21 @@ class UserWithRecipesSerializer(UserSerializer):
             'recipes',
             'recipes_count'
         )
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        recipes_limit = request.GET.get(
+            'recipes_limit', settings.RECIPES_LIMIT_DEFAULT
+        )
+        author_recipes = Recipe.objects.filter(author=obj)[:int(recipes_limit)]
+
+        serializer = RecipeListSerializer(
+            author_recipes,
+            context={'request': request},
+            many=True
+        )
+
+        return serializer.data
 
 
 class FollowSerializer(UserSerializer):
