@@ -82,21 +82,21 @@ class UserWithRecipesSerializer(UserSerializer):
 class FollowSerializer(UserSerializer):
     """Follow user serializer."""
 
+    class Meta:
+        model = Follow
+        fields = ('user', 'author')
+
     def validate(self, data):
         request = self.context.get('request')
         user = request.user
         author = data.get('author')
-        if user.pk == author.pk:
+        if user == author:
             raise exceptions.ValidationError(
                 'Unable for self-subscription!'
             )
         if Follow.objects.filter(user=user, author=author).exists():
             raise exceptions.ValidationError('Already subscripted!')
         return data
-
-    class Meta:
-        model = Follow
-        fields = ('user', 'author')
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
