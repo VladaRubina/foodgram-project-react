@@ -195,19 +195,11 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(min_value=1, max_value=120)
 
-    def validate_tags(self, value):
-        if not value:
-            raise exceptions.ValidationError(
-                'Need to add at least one tag.'
-            )
-        return value
+    class Meta:
+        model = Recipe
+        exclude = ('pub_date',)
 
     def validate_ingredients(self, value):
-        if not value:
-            raise exceptions.ValidationError(
-                'Need to add at least one ingredient.'
-            )
-
         ingredients = [item['id'] for item in value]
         for ingredient in ingredients:
             if ingredients.count(ingredient) > 1:
@@ -243,18 +235,19 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         if ingredients is not None:
             instance.ingredients.clear()
 
-        recipe_ingredients = []
-        for ingredient in ingredients:
-            amount = ingredient['amount']
-            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
-            recipe_ingredient = RecipeIngredient(
+        recipe_ingredients = [
+            RecipeIngredient(
                 recipe=instance,
-                product=ingredient,
-                amount=amount
+                product=get_object_or_404(Ingredient, pk=ingredient['id']),
+                amount=ingredient['amount']
             )
-            recipe_ingredients.append(recipe_ingredient)
+            for ingredient in ingredients
+        ]
+
         RecipeIngredient.objects.bulk_create(
-            recipe_ingredients, ignore_conflicts=True)
+            recipe_ingredients, ignore_conflicts=True
+        )
+
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
@@ -264,10 +257,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         )
 
         return serializer.data
-
-    class Meta:
-        model = Recipe
-        exclude = ('pub_date',)
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
