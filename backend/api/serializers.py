@@ -145,32 +145,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    ingredients = serializers.SerializerMethodField(
-        method_name='get_ingredients'
-    )
-    is_favorited = serializers.SerializerMethodField(
-        method_name='get_is_favorited'
-    )
-    is_in_shopping_cart = serializers.SerializerMethodField(
-        method_name='get_is_in_shopping_cart'
-    )
-
-    def get_ingredients(self, obj):
-        ingredients = RecipeIngredient.objects.filter(recipe=obj)
-        serializer = RecipeIngredientsSerializer(ingredients, many=True)
-        return serializer.data
-
-    def get_is_favorited(self, obj):
-        return self.get_is_add(obj, Favorite)
-
-    def get_is_in_shopping_cart(self, obj):
-        return self.get_is_add(obj, ShoppingCart)
-
-    def get_is_add(self, obj, add):
-        user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        return add.objects.filter(user=user, recipe=obj).exists()
+    ingredients = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -185,6 +162,24 @@ class RecipeSerializer(serializers.ModelSerializer):
             'image',
             'text',
             'cooking_time',
+        )
+
+    def get_ingredients(self, obj):
+        ingredients = RecipeIngredient.objects.filter(recipe=obj)
+        serializer = RecipeIngredientsSerializer(ingredients, many=True)
+        return serializer.data
+
+    def get_is_favorited(self, obj):
+        return self.get_is_add(obj, Favorite)
+
+    def get_is_in_shopping_cart(self, obj):
+        return self.get_is_add(obj, ShoppingCart)
+
+    def get_is_add(self, obj, add):
+        user = self.context['request'].user
+        return (
+            user.is_authenticated and add.objects.filter(
+                user=user, recipe=obj).exists()
         )
 
 
